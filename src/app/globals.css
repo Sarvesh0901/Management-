@@ -1,5 +1,7 @@
-@import 'antd/dist/reset.css';
 @import "tailwindcss";
+
+/* Ant Design v6 uses CSS variables and doesn't require separate CSS import */
+/* Default styles are applied automatically */
 
 html {
   height: 100%;
