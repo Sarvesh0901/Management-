@@ -1,59 +1,51 @@
-# AntD NextJS App
+# 🎨 Frontend - Quick Start
 
-A responsive web application built with Next.js and Ant Design featuring theme switching, authentication flows, and a user dashboard.
+Next.js frontend with Ant Design components.
 
-## Features
+## ⚡ Quick Start
 
-- **Authentication System**: Complete login, signup, forgot password, and reset password flows
-- **Theme Switching**: Toggle between light and dark themes with persistent settings
-- **Responsive Design**: Fully responsive layout for both desktop and mobile devices
-- **Protected Routes**: Dashboard page accessible only to authenticated users
-- **User Dashboard**: Shows user profile and statistics
-
-## Tech Stack
-
-- Next.js 14 (App Router)
-- Ant Design (antd)
-- TypeScript
-- Tailwind CSS
-- React Hooks
-
-## Pages
-
-- `/` - Home page with app introduction
-- `/login` - User login page
-- `/signup` - User registration page
-- `/forgot-password` - Password reset request page
-- `/reset-success` - Password reset confirmation page
-- `/dashboard` - User dashboard (protected route)
-
-## Getting Started
-
-First, install the dependencies:
-
+### 1️⃣ Install Dependencies
 ```bash
+cd antd-next-app
 npm install
 ```
 
-Then, run the development server:
+### 2️⃣ Configure Backend URL
+Check `.env.local`:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
 
+### 3️⃣ Start Development Server
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Frontend runs on http://localhost:3000
 
-## Key Components
+---
 
-- **Theme Context**: Manages theme state (light/dark) and persists in localStorage
-- **Navigation Component**: Responsive navigation bar with user dropdown
-- **Protected Route**: Higher-order component for route protection
-- **Authentication Utilities**: Mock authentication functions for login/signup
+## 🔐 Login
 
-## Authentication Flow
+Use these credentials (after backend setup):
+- Mobile: `1234567890`, PIN: `1234`
+- Mobile: `0987654321`, PIN: `4321` (admin)
 
-The app simulates authentication by storing a mock JWT token in localStorage. In a production environment, this would connect to a backend API.
+---
 
-## Responsive Design
+## 📁 Project Structure
 
-The application uses Ant Design's responsive grid system and includes custom CSS media queries to ensure optimal viewing experience across different screen sizes.
+```
+antd-next-app/
+├── src/
+│   ├── app/              # Next.js pages
+│   ├── components/       # React components
+│   ├── context/          # React contexts
+│   └── utils/            # API client, auth helpers
+├── .env.local            # Environment variables
+└── package.json
+```
+
+---
+
+**Backend**: See `../backend/README.md` for server setup
