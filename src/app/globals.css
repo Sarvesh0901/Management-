@@ -1,16 +1,24 @@
+@import 'antd/dist/reset.css';
 @import "tailwindcss";
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+}
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+/* stylelint-disable at-rule-no-unknown */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+/* stylelint-enable at-rule-no-unknown */
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -19,8 +27,66 @@
   }
 }
 
+/* Responsive adjustments */
+.ant-layout-header {
+  flex-wrap: wrap;
+}
+
+/* Adjust navigation menu on small screens */
+@media (max-width: 768px) {
+  .ant-menu-horizontal {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  
+  .ant-menu-item,
+  .ant-menu-submenu {
+    margin: 0 !important;
+  }
+  
+  .ant-space {
+    flex-wrap: wrap;
+  }
+}
+
+/* Mobile-friendly layout adjustments */
+@media (max-width: 576px) {
+  .ant-card {
+    margin: 8px;
+  }
+  
+  .ant-form-item-label > label {
+    height: auto;
+  }
+  
+  .ant-btn {
+    margin-bottom: 8px;
+  }
+}
+
+/* Theme-specific styles */
+.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --antd-body-background: #fff;
+  --antd-border-color: #ddd;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --antd-body-background: #050508;
+  --antd-border-color: #303030;
+  --antd-text-color: rgba(255, 255, 255, 0.85);
+  --antd-text-color-secondary: rgba(255, 255, 255, 0.45);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
