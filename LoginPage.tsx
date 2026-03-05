@@ -45,7 +45,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     value: string,
     pinState: string[],
     setPinState: (p: string[]) => void,
-    refs: React.RefObject<HTMLInputElement>[]
+    refs: React.RefObject<HTMLInputElement | null>[]
   ) => {
     const v = value.replace(/\D/g, '');
     const newPin = [...pinState];
@@ -59,7 +59,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     e: React.KeyboardEvent<HTMLInputElement>,
     pinState: string[],
     setPinState: (p: string[]) => void,
-    refs: React.RefObject<HTMLInputElement>[]
+    refs: React.RefObject<HTMLInputElement | null>[]
   ) => {
     if (e.key === 'Backspace' && !pinState[index] && index > 0) {
       const newPin = [...pinState];
@@ -82,7 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     setErrors({ mobile: '', pin: '' });
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/login`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mobile, password: pinStr, fcm_token: null }),
