@@ -1,4 +1,6 @@
 // API Configuration
+// We're using the server backend by default. 
+// If you want to use a local backend, set NEXT_PUBLIC_API_URL in .env.local
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://management-backend-seven.vercel.app/api';
 
 // Helper function to handle API responses
