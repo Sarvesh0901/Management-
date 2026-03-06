@@ -1,11 +1,12 @@
 'use client';
 
 import { Layout, Menu, Space, Dropdown, Avatar, Button, MenuProps } from 'antd';
-import { HomeOutlined, LoginOutlined, TeamOutlined, UserOutlined, LogoutOutlined, DownOutlined, SettingOutlined, MailOutlined } from '@ant-design/icons';
+import { LoginOutlined, TeamOutlined, UserOutlined, LogoutOutlined, DownOutlined, SettingOutlined, MailOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import ThemeSwitcher from './ThemeSwitcher';
 import { isAuthenticated, logout } from '@/utils/auth';
+import { useState, useEffect } from 'react';
 
 const { Header } = Layout;
 
@@ -13,6 +14,24 @@ const Navigation = () => {
   const pathname = usePathname();
   const router = useRouter();
   const isAuth = isAuthenticated();
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Only run on client side to avoid hydration mismatch
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.profile_photo_url) {
+            setUserAvatar(user.profile_photo_url);
+          }
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+        }
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -21,11 +40,6 @@ const Navigation = () => {
 
   // User dropdown menu items
   const userMenuItems: MenuProps['items'] = [
-    {
-      key: 'home',
-      label: <Link href="/">Home</Link>,
-      icon: <HomeOutlined />,
-    },
     {
       key: 'dashboard',
       label: <Link href="/dashboard">Dashboard</Link>,
@@ -61,15 +75,6 @@ const Navigation = () => {
     },
   ];
 
-  // Main navigation menu items
-  const mainMenuItems: MenuProps['items'] = [
-    {
-      key: '/',
-      label: <Link href="/">Home</Link>,
-      icon: <HomeOutlined />,
-    },
-  ];
-
   // Auth menu items (Login/Signup) when not authenticated
   const authMenuItems: MenuProps['items'] = [
     {
@@ -99,32 +104,34 @@ const Navigation = () => {
         /> */}
 
         <ThemeSwitcher />
-        {isAuth ? (
-          <Dropdown menu={{ items: userMenuItems }} trigger={['click']}>
-            <Button type="text" style={{ color: 'white' }}>
-              <Space>
-                <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1' }} />
-                <span>Account</span>
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-        ) : (
-          <Dropdown menu={{ items: authMenuItems }} trigger={['click']}>
-            <Button type="primary" style={{ 
-              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
-              border: 'none',
-              borderRadius: '12px',
-              padding: '0 20px'
-            }}>
-              <Space>
-                <LoginOutlined />
-                <span>Login / Sign Up</span>
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-        )}
+        <Dropdown menu={{ items: isAuth ? userMenuItems : authMenuItems }} trigger={['click']}>
+          <Button type={isAuth ? 'text' : 'primary'} style={isAuth ? { color: 'white' } : {
+            background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
+            border: 'none',
+            borderRadius: '12px',
+            padding: '0 20px'
+          }}>
+            <Space>
+              {isAuth ? (
+                <>
+                  {userAvatar ? (
+                    <Avatar size="small" src={userAvatar} />
+                  ) : (
+                    <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1' }} />
+                  )}
+                  <span>Account</span>
+                  <DownOutlined />
+                </>
+              ) : (
+                <>
+                  <LoginOutlined />
+                  <span>Login / Sign Up</span>
+                  <DownOutlined />
+                </>
+              )}
+            </Space>
+          </Button>
+        </Dropdown>
       </Space>
     </Header>
   );

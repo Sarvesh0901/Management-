@@ -2,9 +2,10 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { login, signup } from '../../utils/auth';
 
-type Screen = 'login' | 'signup' | 'forgot' | 'forgot-success';
+type Screen = 'login' | 'forgot' | 'forgot-success';
 
 interface LoginPageProps {
   onLoginSuccess?: () => void;
@@ -21,24 +22,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ mobile: '', pin: '' });
 
-  // Sign up state
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [signupMobile, setSignupMobile] = useState('');
-  const [signupPin, setSignupPin] = useState(['', '', '', '']);
-  const [showSignupPin, setShowSignupPin] = useState(false);
-
   // Forgot state
   const [forgotMobile, setForgotMobile] = useState('');
 
   const pinRefs = [
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-  ] as const;
-
-  const signupPinRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -98,23 +85,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       }
     } catch {
       setErrors({ mobile: '', pin: 'Network error, please try again' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignup = async () => {
-    setLoading(true);
-    try {
-      // Using the signup function from our auth utilities
-      const success = await signup(name, signupMobile, signupPin.join(''));
-      if (success) {
-        console.log('Signup successful');
-        if (onLoginSuccess) onLoginSuccess();
-        router.push('/dashboard');
-      }
-    } catch {
-      console.log('Signup failed');
     } finally {
       setLoading(false);
     }
@@ -580,69 +550,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
               <div className="lo-footer">
                 <button className="lo-link" onClick={() => switchScreen('forgot')}>Forgot PIN?</button>
-                <button className="lo-link" onClick={() => switchScreen('signup')}>Create account →</button>
-              </div>
-            </>
-          )}
-
-          {/* ── SIGN UP ─────────────────────────────────── */}
-          {screen === 'signup' && (
-            <>
-              <div className="lo-heading">Create account</div>
-              <div className="lo-subheading">Join us — it only takes a minute</div>
-
-              <div className="lo-field">
-                <label className="lo-label">Full Name</label>
-                <input className="lo-input" type="text" placeholder="Your full name" value={name} onChange={e => setName(e.target.value)} />
-              </div>
-
-              <div className="lo-field">
-                <label className="lo-label">Mobile Number</label>
-                <input
-                  className="lo-input"
-                  type="tel"
-                  maxLength={10}
-                  placeholder="Enter 10-digit number"
-                  value={signupMobile}
-                  onChange={e => setSignupMobile(e.target.value.replace(/\D/g, '').substring(0, 10))}
-                />
-              </div>
-
-              <div className="lo-field">
-                <label className="lo-label">Email (optional)</label>
-                <input className="lo-input" type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} />
-              </div>
-
-              <div className="lo-field">
-                <div className="lo-pin-header">
-                  <label className="lo-label" style={{ margin: 0 }}>Set PIN</label>
-                  <button className="lo-toggle" onClick={() => setShowSignupPin(!showSignupPin)}>
-                    {showSignupPin ? 'Hide PIN' : 'Show PIN'}
-                  </button>
-                </div>
-                <div className="lo-pin-row">
-                  {signupPin.map((digit, i) => (
-                    <input
-                      key={i}
-                      ref={signupPinRefs[i]}
-                      className={`lo-pin-box${digit ? ' filled' : ''}`}
-                      type={showSignupPin ? 'text' : 'password'}
-                      maxLength={1}
-                      inputMode="numeric"
-                      value={digit}
-                      onChange={e => handlePinChange(i, e.target.value, signupPin, setSignupPin, signupPinRefs)}
-                      onKeyDown={e => handlePinKeyDown(i, e, signupPin, setSignupPin, signupPinRefs)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <button className="lo-btn" onClick={handleSignup} disabled={loading}>
-                {loading ? <><span className="lo-spin" />Creating account...</> : 'Create Account'}
-              </button>
-
-              <div className="lo-footer">
-                <button className="lo-link" onClick={() => switchScreen('login')}>← Back to login</button>
+                <Link href="/signup" className="lo-link" style={{ textDecoration: 'none' }}>Create account →</Link>
               </div>
             </>
           )}

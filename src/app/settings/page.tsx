@@ -12,10 +12,35 @@ const { Content, Footer } = Layout;
 const { Option } = Select;
 
 const SettingsPage = () => {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [language, setLanguage] = useState('en');
   const [privacy, setPrivacy] = useState('public');
   const { darkMode, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    // Fetch user profile from backend
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/user/profile', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleSave = () => {
     alert('Settings saved successfully!');
@@ -36,11 +61,18 @@ const SettingsPage = () => {
                 <h4 style={{ color: darkMode ? '#fff' : '#000000', marginBottom: '12px', display: 'flex', alignItems: 'center' }}>
                   <UserOutlined style={{ marginRight: '8px' }} /> Profile Information
                 </h4>
-                <div style={{ background: darkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.08)', padding: '16px', borderRadius: '14px' }}>
-                  <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Name:</strong> John Doe</p>
-                  <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Email:</strong> john@example.com</p>
-                  <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Member since:</strong> January 1, 2024</p>
-                </div>
+                {loading ? (
+                  <div style={{ padding: '16px' }}>Loading...</div>
+                ) : user ? (
+                  <div style={{ background: darkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.08)', padding: '16px', borderRadius: '14px' }}>
+                    <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Name:</strong> {user.name}</p>
+                    <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Email:</strong> {user.email}</p>
+                    <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Mobile:</strong> {user.mobile}</p>
+                    <p style={{ color: darkMode ? '#d1d5db' : '#4b5563', margin: '8px 0' }}><strong>Member since:</strong> {user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'N/A'}</p>
+                  </div>
+                ) : (
+                  <div style={{ padding: '16px', color: darkMode ? '#d1d5db' : '#4b5563' }}>Failed to load user data</div>
+                )}
               </div>
 
               <div style={{ marginBottom: '24px' }}>
