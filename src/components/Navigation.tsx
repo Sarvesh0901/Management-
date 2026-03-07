@@ -1,7 +1,7 @@
 'use client';
 
 import { Layout, Menu, Space, Dropdown, Avatar, Button, MenuProps } from 'antd';
-import { LoginOutlined, TeamOutlined, UserOutlined, LogoutOutlined, DownOutlined, SettingOutlined, MailOutlined } from '@ant-design/icons';
+import { LoginOutlined, TeamOutlined, UserOutlined, LogoutOutlined, DownOutlined, SettingOutlined, MailOutlined, GlobalOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import ThemeSwitcher from './ThemeSwitcher';
@@ -41,8 +41,8 @@ const Navigation = () => {
   // User dropdown menu items
   const userMenuItems: MenuProps['items'] = [
     {
-      key: 'dashboard',
-      label: <Link href="/dashboard">Dashboard</Link>,
+      key: 'profile',
+      label: <Link href="/settings">Profile</Link>,
       icon: <UserOutlined />,
     },
     {
@@ -60,11 +60,18 @@ const Navigation = () => {
     },
     {
       key: 'contact',
-      label: <Link href="/contact">Contact</Link>,
+      label: <Link href="/contact">Contact Us</Link>,
       icon: <MailOutlined />,
     },
     {
       type: 'divider',
+    },
+    {
+      key: 'theme',
+      label: <div onClick={(e) => e.stopPropagation()}>
+        <ThemeSwitcher />
+      </div>,
+      icon: <GlobalOutlined />,
     },
     {
       key: 'logout',
@@ -105,28 +112,27 @@ const Navigation = () => {
 
         <ThemeSwitcher />
         <Dropdown menu={{ items: isAuth ? userMenuItems : authMenuItems }} trigger={['click']}>
-          <Button type={isAuth ? 'text' : 'primary'} style={isAuth ? { color: 'white' } : {
-            background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '0 20px'
-          }}>
+          <Button 
+            type="text" 
+            style={{ 
+              color: 'white',
+              padding: '8px',
+              height: 'auto',
+              background: 'transparent',
+              border: 'none'
+            }}
+          >
             <Space>
               {isAuth ? (
-                <>
-                  {userAvatar ? (
-                    <Avatar size="small" src={userAvatar} />
-                  ) : (
-                    <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1', background: '#6366f1' }} />
-                  )}
-                  <span>Account</span>
-                  <DownOutlined />
-                </>
+                userAvatar ? (
+                  <Avatar size="large" src={userAvatar} style={{ cursor: 'pointer' }} />
+                ) : (
+                  <Avatar size="large" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1', cursor: 'pointer' }} />
+                )
               ) : (
                 <>
-                  <LoginOutlined />
+                  <LoginOutlined style={{ fontSize: '20px' }} />
                   <span>Login / Sign Up</span>
-                  <DownOutlined />
                 </>
               )}
             </Space>
