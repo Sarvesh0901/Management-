@@ -13,23 +13,28 @@ const { Header } = Layout;
 const Navigation = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const isAuth = isAuthenticated();
+  const [isAuth, setIsAuth] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Only run on client side to avoid hydration mismatch
-    if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        try {
-          const user = JSON.parse(userStr);
-          if (user.profile_photo_url) {
-            setUserAvatar(user.profile_photo_url);
-          }
-        } catch (e) {
-          console.error('Error parsing user data:', e);
+    setMounted(true);
+    const userStr = localStorage.getItem('user');
+    const token = localStorage.getItem('authToken');
+    if (userStr && token) {
+      try {
+        const user = JSON.parse(userStr);
+        setIsAuth(true);
+        if (user.profile_photo_url) {
+          setUserAvatar(user.profile_photo_url);
         }
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        setIsAuth(false);
       }
+    } else {
+      setIsAuth(false);
     }
   }, []);
 
@@ -40,6 +45,11 @@ const Navigation = () => {
 
   // User dropdown menu items
   const userMenuItems: MenuProps['items'] = [
+    ...(pathname !== '/dashboard' ? [{
+      key: 'dashboard',
+      label: <Link href="/dashboard">Dashboard</Link>,
+      icon: <UserOutlined />,
+    }] : []),
     {
       key: 'settings',
       label: <Link href="/settings">Settings</Link>,
@@ -90,6 +100,11 @@ const Navigation = () => {
       icon: <TeamOutlined />,
     },
   ];
+
+  // Don't render anything until mounted on client
+  if (!mounted) {
+    return null;
+  }
 
   return (
     !isAuth ? null : (
