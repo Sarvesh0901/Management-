@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/utils/auth';
 
@@ -10,14 +10,29 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    setMounted(true);
+    // Check auth on client side only
+    const token = localStorage.getItem('authToken');
+    const userStr = localStorage.getItem('user');
+    const hasAuth = !!(token && userStr);
+    
+    if (!hasAuth) {
       router.push('/login');
+    } else {
+      setIsAuthenticated(true);
     }
   }, [router]);
 
-  if (!isAuthenticated()) {
+  // Don't render anything until mounted on client
+  if (!mounted) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
     return (
       <div style={{ 
         display: 'flex', 

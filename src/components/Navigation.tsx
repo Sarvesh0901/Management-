@@ -20,22 +20,44 @@ const Navigation = () => {
   useEffect(() => {
     // Only run on client side to avoid hydration mismatch
     setMounted(true);
-    const userStr = localStorage.getItem('user');
-    const token = localStorage.getItem('authToken');
-    if (userStr && token) {
-      try {
-        const user = JSON.parse(userStr);
-        setIsAuth(true);
-        if (user.profile_photo_url) {
-          setUserAvatar(user.profile_photo_url);
+    
+    // Function to check and update auth state
+    const checkAuth = () => {
+      const userStr = localStorage.getItem('user');
+      const token = localStorage.getItem('authToken');
+      
+      // Check if both user and token exist
+      const hasAuth = !!(userStr && token);
+      
+      if (hasAuth) {
+        try {
+          const user = JSON.parse(userStr);
+          setIsAuth(true);
+          if (user.profile_photo_url) {
+            setUserAvatar(user.profile_photo_url);
+          }
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+          setIsAuth(false);
         }
-      } catch (e) {
-        console.error('Error parsing user data:', e);
+      } else {
         setIsAuth(false);
       }
-    } else {
-      setIsAuth(false);
-    }
+    };
+    
+    // Initial check
+    checkAuth();
+    
+    // Listen for storage changes (login/logout events)
+    window.addEventListener('storage', checkAuth);
+    
+    // Also check periodically in case of same-tab updates
+    const interval = setInterval(checkAuth, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleLogout = () => {

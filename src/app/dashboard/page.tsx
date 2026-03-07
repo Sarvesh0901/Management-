@@ -47,6 +47,7 @@ const DashboardPage = () => {
     fetchData();
   }, []);
   
+  // Inline styles to prevent hydration mismatch
   const layoutStyle = {
     minHeight: '100vh',
     background: darkMode ? '#050508' : '#ffffff'
@@ -54,8 +55,15 @@ const DashboardPage = () => {
 
   return (
     <ProtectedRoute>
-      <Layout style={layoutStyle}>
-        <Content style={{ padding: '24px', marginTop: 64 }}>
+      <Layout style={{
+        minHeight: '100vh',
+        background: darkMode ? '#050508' : '#ffffff'
+      }}>
+        <Content style={{ 
+          padding: '24px', 
+          marginTop: 64,
+          background: 'transparent'
+        }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <Row gutter={[24, 24]}>
               <Col xs={24} lg={16}>
