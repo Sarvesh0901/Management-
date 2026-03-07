@@ -117,7 +117,7 @@ const Navigation = () => {
                   {userAvatar ? (
                     <Avatar size="small" src={userAvatar} />
                   ) : (
-                    <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1' }} />
+                    <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1', background: '#6366f1' }} />
                   )}
                   <span>Account</span>
                   <DownOutlined />

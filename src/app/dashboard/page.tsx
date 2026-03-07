@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Layout, Typography, Row, Col, Tag, Skeleton, message } from 'antd';
-import { MailOutlined, PhoneOutlined, CalendarOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/navigation';
 import DashboardHeader from '../../components/common/DashboardHeader';
 import DashboardCard from '../../components/common/DashboardCard';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useTheme } from '../../context/ThemeContext';
-import { userAPI, articlesAPI } from '@/utils/api';
+import { articlesAPI } from '@/utils/api';
 
 const { Content, Footer } = Layout;
 const { Title, Text } = Typography;
@@ -23,29 +23,16 @@ interface Article {
   imageUrl?: string;
 }
 
-interface User {
-  name: string;
-  email: string;
-  mobile: string;
-  role: string;
-  joinDate: string;
-  avatar?: string;
-}
-
 const DashboardPage = () => {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { darkMode } = useTheme();
+  const router = useRouter();
 
   useEffect(() => {
-    // Fetch user and articles data from backend
+    // Fetch articles data from backend
     const fetchData = async () => {
       try {
-        // Fetch user profile
-        const userData = await userAPI.getProfile();
-        setUser(userData.user);
-        
         // Fetch articles
         const articlesData = await articlesAPI.getArticles(1, 10);
         setArticles(articlesData.articles);
@@ -72,78 +59,105 @@ const DashboardPage = () => {
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <Row gutter={[24, 24]}>
               <Col xs={24} lg={16}>
-                <DashboardCard title="User Profile">
-                  {loading ? (
-                    <Skeleton active paragraph={{ rows: 3 }} />
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '12px', background: darkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.08)' }}>
-                      <div style={{ 
-                        width: '60px', 
-                        height: '60px', 
-                        borderRadius: '50%', 
-                        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '20px',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        marginRight: '16px'
-                      }}>
-                        {user?.name.charAt(0)}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <Title level={4} style={{ color: darkMode ? '#fff' : '#000000', margin: 0 }}>{user?.name}</Title>
-                        <Text style={{ color: darkMode ? '#d1d5db' : '#4b5563', display: 'block', marginBottom: '4px' }}>{user?.role}</Text>
-                        <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <MailOutlined style={{ color: darkMode ? '#a5b4fc' : '#4f46e5' }} />
-                            <Text style={{ color: darkMode ? '#d1d5db' : '#4b5563' }}>{user?.email}</Text>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <PhoneOutlined style={{ color: darkMode ? '#a5b4fc' : '#4f46e5' }} />
-                            <Text style={{ color: darkMode ? '#d1d5db' : '#4b5563' }}>{user?.mobile}</Text>
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                          <CalendarOutlined style={{ color: darkMode ? '#a5b4fc' : '#4f46e5' }} />
-                          <Text style={{ color: darkMode ? '#d1d5db' : '#4b5563' }}>Member since {user?.joinDate}</Text>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </DashboardCard>
-                
-                <DashboardCard title="Latest Articles" style={{ marginTop: '24px' }}>
+                <DashboardCard title="Latest Articles">
                   {loading ? (
                     <Skeleton active paragraph={{ rows: 3 }} />
                   ) : (
                     <div>
                       {articles.slice(0, 2).map(article => (
-                        <div key={article.id} style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)' }}>
-                          <Title level={4} style={{ color: darkMode ? '#fff' : '#000000', marginBottom: '8px' }}>{article.title}</Title>
-                          <Text style={{ color: darkMode ? '#d1d5db' : '#4b5563', display: 'block', marginBottom: '12px' }}>{article.description}</Text>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                        <div 
+                          key={article.id} 
+                          style={{ 
+                            marginBottom: '20px', 
+                            paddingBottom: '20px', 
+                            borderBottom: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid #eaeaea',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          <Title 
+                            level={4} 
+                            style={{ 
+                              color: darkMode ? '#fff' : '#000000', 
+                              marginBottom: '12px', 
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              transition: 'color 0.2s ease'
+                            }}
+                            onClick={() => router.push(`/dashboard/documentation/${article.id}`)}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = darkMode ? '#a5b4fc' : '#4f46e5';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = darkMode ? '#fff' : '#000000';
+                            }}
+                          > 
+                            {article.title}
+                          </Title>
+                          <Text style={{ color: darkMode ? '#a1a1aa' : '#666', display: 'block', marginBottom: '16px', lineHeight: 1.6 }}> 
+                            {article.description}
+                          </Text>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}> 
                             {article.tags.map(tag => (
-                              <Tag key={tag} color="blue" style={{ color: darkMode ? '#fff' : '#000000', borderRadius: '20px' }}>{tag}</Tag>
+                              <Tag 
+                                key={tag} 
+                                color={darkMode ? 'rgba(99, 102, 241, 0.15)' : '#f3f4f6'} 
+                                style={{ 
+                                  color: darkMode ? '#a5b4fc' : '#4f46e5', 
+                                  borderRadius: '6px',
+                                  border: 'none',
+                                  padding: '4px 12px',
+                                  fontSize: '13px',
+                                  fontWeight: 500,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease'
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  console.log(`Tag clicked: ${tag}`);
+                                  if (typeof window !== 'undefined') {
+                                    alert(`You clicked on tag: ${tag}\n\nThis could filter articles by this tag.`);
+                                  }
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = darkMode ? 'rgba(99, 102, 241, 0.25)' : 'rgba(99, 102, 241, 0.15)';
+                                  e.currentTarget.style.transform = 'translateY(-2px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = darkMode ? 'rgba(99, 102, 241, 0.15)' : '#f3f4f6';
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                }}
+                              >
+                                {tag}
+                              </Tag>
                             ))}
                           </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ color: darkMode ? '#9ca3af' : '#6b7280', fontSize: '12px' }}>
-                              By {article.author} • {new Date(article.publishedAt).toLocaleDateString()}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> 
+                            <Text style={{ color: darkMode ? '#71717a' : '#9ca3af', fontSize: '13px' }}>
+                              By <span style={{ color: darkMode ? '#a1a1aa' : '#4b5563', fontWeight: 500 }}>{article.author}</span> • {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </Text>
                             <button 
                               style={{
-                                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)',
+                                background: darkMode ? '#fff' : '#000',
                                 border: 'none',
                                 borderRadius: '8px',
-                                color: 'white',
-                                padding: '6px 12px',
+                                color: darkMode ? '#000' : '#fff',
+                                padding: '8px 16px',
                                 cursor: 'pointer',
-                                fontSize: '12px'
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                transition: 'all 0.2s ease'
+                              }}
+                              onClick={() => router.push(`/dashboard/documentation/${article.id}`)}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
                               }}
                             >
-                              Read More
+                              Read More →
                             </button>
                           </div>
                         </div>
@@ -165,21 +179,63 @@ const DashboardPage = () => {
                         <Col xs={24} sm={12} key={article.id}>
                           <div 
                             style={{ 
-                              background: darkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.08)', 
-                              padding: '16px', 
+                              background: darkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(243, 244, 246, 0.8)', 
+                              padding: '20px', 
                               borderRadius: '12px',
                               cursor: 'pointer',
-                              transition: 'transform 0.2s, background 0.2s'
+                              transition: 'all 0.2s ease',
+                              border: darkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid #e5e7eb'
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = darkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.2)'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = darkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(99, 102, 241, 0.08)'}
+                            onClick={() => router.push(`/dashboard/documentation/${article.id}`)}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = darkMode ? 'rgba(99, 102, 241, 0.1)' : 'rgba(249, 250, 251, 1)';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.boxShadow = darkMode ? '0 8px 24px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.05)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = darkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(243, 244, 246, 0.8)';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
                           >
-                            <Text strong style={{ color: darkMode ? '#fff' : '#000000', display: 'block', marginBottom: '8px' }}>
+                            <Text 
+                              strong 
+                              style={{ 
+                                color: darkMode ? '#fff' : '#000000', 
+                                display: 'block', 
+                                marginBottom: '12px', 
+                                fontSize: '15px', 
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                transition: 'color 0.2s ease'
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/dashboard/documentation/${article.id}`);
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = darkMode ? '#a5b4fc' : '#4f46e5';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = darkMode ? '#fff' : '#000000';
+                              }}
+                            >
                               {article.title.substring(0, 40)}...
                             </Text>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}> 
                               {article.tags.slice(0, 2).map(tag => (
-                                <Tag key={tag} color="geekblue" style={{ color: darkMode ? '#fff' : '#000000', borderRadius: '12px', fontSize: '10px' }}>
+                                <Tag 
+                                  key={tag} 
+                                  color={darkMode ? 'rgba(168, 85, 247, 0.15)' : '#ede9fe'} 
+                                  style={{ 
+                                    color: darkMode ? '#c4b5fd' : '#7c3aed', 
+                                    borderRadius: '6px',
+                                    border: 'none',
+                                    fontSize: '11px',
+                                    fontWeight: 500,
+                                    padding: '2px 8px'
+                                  }}
+                                >
                                   {tag}
                                 </Tag>
                               ))}
