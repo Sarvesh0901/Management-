@@ -41,11 +41,6 @@ const Navigation = () => {
   // User dropdown menu items
   const userMenuItems: MenuProps['items'] = [
     {
-      key: 'profile',
-      label: <Link href="/settings">Profile</Link>,
-      icon: <UserOutlined />,
-    },
-    {
       key: 'settings',
       label: <Link href="/settings">Settings</Link>,
       icon: <SettingOutlined />,
@@ -97,49 +92,35 @@ const Navigation = () => {
   ];
 
   return (
-    <Header className="flex justify-between items-center px-4" style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'rgba(255, 255, 255, 0.045)', backdropFilter: 'blur(64px)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', height: '80px', minHeight: '80px' }}>
-      <div className="logo" style={{ color: 'white', fontSize: '22px', fontWeight: 'bold' }}>
-        Secure Portal
-      </div>
-      <Space>
-        {/* <Menu
-          theme="dark"
-          mode="horizontal"
-          selectedKeys={[pathname]}
-          items={mainMenuItems}
-          style={{ flex: 1, minWidth: 0, background: 'transparent' }}
-        /> */}
-
-        <ThemeSwitcher />
-        <Dropdown menu={{ items: isAuth ? userMenuItems : authMenuItems }} trigger={['click']}>
-          <Button 
-            type="text" 
-            style={{ 
-              color: 'white',
-              padding: '8px',
-              height: 'auto',
-              background: 'transparent',
-              border: 'none'
-            }}
-          >
-            <Space>
-              {isAuth ? (
-                userAvatar ? (
+    !isAuth ? null : (
+      <Header className="flex justify-between items-center px-4" style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'rgba(255, 255, 255, 0.045)', backdropFilter: 'blur(64px)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', height: '80px', minHeight: '80px' }}>
+        <div className="logo" style={{ color: 'white', fontSize: '22px', fontWeight: 'bold' }}>
+          Secure Portal
+        </div>
+        <Space>
+          <Dropdown menu={{ items: userMenuItems }} trigger={['click']}>
+            <Button 
+              type="text" 
+              style={{ 
+                color: 'white',
+                padding: '8px',
+                height: 'auto',
+                background: 'transparent',
+                border: 'none'
+              }}
+            >
+              <Space>
+                {userAvatar ? (
                   <Avatar size="large" src={userAvatar} style={{ cursor: 'pointer' }} />
                 ) : (
                   <Avatar size="large" icon={<UserOutlined />} style={{ backgroundColor: '#6366f1', cursor: 'pointer' }} />
-                )
-              ) : (
-                <>
-                  <LoginOutlined style={{ fontSize: '20px' }} />
-                  <span>Login / Sign Up</span>
-                </>
-              )}
-            </Space>
-          </Button>
-        </Dropdown>
-      </Space>
-    </Header>
+                )}
+              </Space>
+            </Button>
+          </Dropdown>
+        </Space>
+      </Header>
+    )
   );
 };
 
